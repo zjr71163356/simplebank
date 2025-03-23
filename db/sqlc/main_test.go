@@ -1,0 +1,28 @@
+package db
+
+import (
+	"database/sql"
+	"log"
+	"os"
+	"testing"
+
+	_ "github.com/lib/pq"
+)
+
+var testQueries *Queries
+
+const (
+	dbDriver = "postgres"
+	dbSource = "postgresql://root:azsx0123456@localhost:5432/simple_bank?sslmode=disable"
+)
+
+func TestMain(m *testing.M) {
+	connManage, err := sql.Open(dbDriver, dbSource)
+	// fmt.Print(connManage)
+	if err != nil {
+		log.Fatal(err)
+	}
+	testQueries = New(connManage)
+	os.Exit(m.Run())
+
+}
