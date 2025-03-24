@@ -6,24 +6,28 @@ import (
 )
 
 const alphabet = "abcdefghijklmnopqrstuvwxyz"
-func RandomString(n int) string {
+
+func RandomString(n int64) string {
 	var sb strings.Builder
 
-	for i := 0; i < n; i++ {
+	for i := int64(0); i < n; i++ {
 		sb.WriteByte(alphabet[rand.Intn(len(alphabet))])
 
 	}
 	return sb.String()
 }
 
-func RandomInt(min, max int) int {
-	return min + rand.Intn(max-min+1)
+func RandomInt63(min, max int64) int64 {
+	return min + rand.Int63n(max-min+1)
 }
 
-func RandomOwnerName(min, max int) string {
-	return RandomString(RandomInt(min, max))
+func RandomOwnerName(min, max int64) string {
+	return RandomString(RandomInt63(min, max))
 }
 
-func RandomCurrency(){
-
+func RandomCurrency() string {
+	currencies := []string{"USD", "EUR", "CAD", "JPY", "GBP"}
+	return currencies[RandomInt63(0, int64(len(currencies)-1))]
 }
+
+func Random
