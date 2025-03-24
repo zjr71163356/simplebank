@@ -98,7 +98,6 @@ func TestDeleteAccount(t *testing.T) {
 
 func TestListAccounts(t *testing.T) {
 
-	utils.RandomString(5)
 	// Create 10 random accounts
 	var createdAccountList []Account
 
