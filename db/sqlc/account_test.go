@@ -29,7 +29,7 @@ func CheckGotAccount(t *testing.T, account Account, account2 Account) {
 	require.Equal(t, account.CreatedAt, account2.CreatedAt)
 }
 
-func CreateAccount(t *testing.T) (Account, error) {
+func CreateRandomAccount(t *testing.T) (Account, error) {
 	arg := CreateAccountParams{
 		Owner:    utils.RandomString(5),
 		Balance:  utils.RandomInt63(0, 5000),
@@ -69,24 +69,24 @@ func GetAccountForUpdate(t *testing.T, account Account) (Account, error) {
 }
 
 func TestCreateAccount(t *testing.T) {
-	CreateAccount(t)
+	CreateRandomAccount(t)
 }
 
 func TestGetAccount(t *testing.T) {
-	account1, _ := CreateAccount(t)
+	account1, _ := CreateRandomAccount(t)
 	GetAccount(t, account1)
 
 }
 
 func TestGetAccountForUpdate(t *testing.T) {
-	account, _ := CreateAccount(t)
+	account, _ := CreateRandomAccount(t)
 	GetAccountForUpdate(t, account)
 
 }
 
 func TestDeleteAccount(t *testing.T) {
 
-	account, _ := CreateAccount(t)
+	account, _ := CreateRandomAccount(t)
 	err := testQueries.DeleteAccount(context.Background(), account.ID)
 	require.NoError(t, err)
 
@@ -125,12 +125,12 @@ func TestListAccounts(t *testing.T) {
 }
 
 func TestUpdateAccountBalance(t *testing.T) {
-	account, _ := CreateAccount(t)
+	account, _ := CreateRandomAccount(t)
 	arg := UpdateAccountBalanceParams{
 		ID:      account.ID,
 		Balance: utils.RandomInt63(0, 5000),
 	}
 	account, err := testQueries.UpdateAccountBalance(context.Background(), arg)
 	require.NoError(t, err)
-	require.NotEqual(t, arg.Balance, account.Balance)
+	require.Equal(t, arg.Balance, account.Balance)
 }

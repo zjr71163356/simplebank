@@ -30,4 +30,3 @@ func RandomCurrency() string {
 	return currencies[RandomInt63(0, int64(len(currencies)-1))]
 }
 
-func Random

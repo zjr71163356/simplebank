@@ -8,11 +8,11 @@ import (
 	"github.com/zjr71163356/simplebank/utils"
 )
 
-func CreateTransfer(t *testing.T) (Transfer, error) {
-	fromAccount, err := CreateAccount(t)
+func CreateRandomTransfer(t *testing.T) (Transfer, error) {
+	fromAccount, err := CreateRandomAccount(t)
 	require.NoError(t, err)
 
-	toAccount, err := CreateAccount(t)
+	toAccount, err := CreateRandomAccount(t)
 	require.NoError(t, err)
 
 	arg := CreateTransferParams{
@@ -56,10 +56,10 @@ func CreateTransferWithFixedID(t *testing.T, fromAccountId int64, toAccountId in
 }
 
 func TestCreateTransfer(t *testing.T) {
-	CreateTransfer(t)
+	CreateRandomTransfer(t)
 }
 func TestGetTransfer(t *testing.T) {
-	transfer, _ := CreateTransfer(t)
+	transfer, _ := CreateRandomTransfer(t)
 	transfer2, err := testQueries.GetTransfer(context.Background(), transfer.ID)
 
 	require.NoError(t, err)
@@ -76,8 +76,8 @@ func TestGetTransfer(t *testing.T) {
 
 func TestListTransfers(t *testing.T) {
 	var transferList []Transfer
-	fromAccount, _ := CreateAccount(t)
-	toAccount, _ := CreateAccount(t)
+	fromAccount, _ := CreateRandomAccount(t)
+	toAccount, _ := CreateRandomAccount(t)
 	for i := 0; i < 10; i++ {
 		transfer, _ := CreateTransferWithFixedID(t, fromAccount.ID, toAccount.ID)
 		transferList = append(transferList, transfer)
@@ -91,11 +91,11 @@ func TestListTransfers(t *testing.T) {
 	}
 
 	transferList2, err := testQueries.ListTransfers(context.Background(), arg)
-	require.NoError(t,err)
-	require.NotEmpty(t,transferList2)
+	require.NoError(t, err)
+	require.NotEmpty(t, transferList2)
 
-	for i:=0;i<5;i++{
-		 require.Equal()
+	for idx, transfer := range transferList2 {
+		require.Equal(t, transferList[idx+5], transfer)
 	}
 
 }
