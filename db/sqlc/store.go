@@ -11,7 +11,7 @@ type Store struct {
 	db *sql.DB
 }
 
-type TransferResultParams struct {
+type TransferTxResult struct {
 	Transfer    Transfer `json:"transfer"`
 	FromAccount Account  `json:"from_account"`
 	ToAccount   Account  `json:"to_account"`
@@ -49,8 +49,8 @@ func (store *Store) exeTx(ctx context.Context, fn func(q *Queries) error) error 
 	return tx.Commit()
 }
 
-func (store *Store) TransferTx(ctx context.Context, q *Queries, arg TransferTxParams) (TransferResultParams, error) {
-	var result TransferResultParams
+func (store *Store) TransferTx(ctx context.Context, q *Queries, arg TransferTxParams) (TransferTxResult, error) {
+	var result TransferTxResult
 	err := store.exeTx(ctx, func(q *Queries) error {
 		var err error
 		result.Transfer, err = q.CreateTransfer(ctx, CreateTransferParams(arg))

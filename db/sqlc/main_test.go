@@ -18,12 +18,12 @@ const (
 )
 
 func TestMain(m *testing.M) {
-	connManage, err := sql.Open(dbDriver, dbSource)
+	testDB, err := sql.Open(dbDriver, dbSource)
 	// fmt.Print(connManage)
 	if err != nil {
 		log.Fatal(err)
 	}
-	testQueries = New(connManage)
+	testQueries = New(testDB)
 	os.Exit(m.Run())
 
 }

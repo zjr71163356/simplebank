@@ -1,16 +1,74 @@
 package db
 
-import "testing"
+import (
+	"context"
+	"testing"
 
-func testTransTx(t *testing.T) {
-	account1 := CreateRandomAccount(t)
-	account2 := CreateRandomAccount(t)
+	"github.com/stretchr/testify/require"
+)
+
+func TestTransTx(t *testing.T) {
+	testStore := NewStore(testDB)
+
+	account1, _ := CreateRandomAccount(t)
+	account2, _ := CreateRandomAccount(t)
+	amount := int64(10)
 	n := 5
 
+	errs := make(chan error)
+	results := make(chan TransferTxResult)
+
+	mark := make(map[int]bool)
+
 	for i := 0; i < n; i++ {
-		go func(){
-			
+		go func() {
+			result, err := testStore.TransferTx(context.Background(), testQueries, TransferTxParams{
+				FromAccountID: account1.ID,
+				ToAccountID:   account2.ID,
+				Amount:        amount,
+			})
+
+			errs <- err
+			results <- result
+
 		}()
 	}
+
+	for i := 0; i < n; i++ {
+
+		err := <-errs
+		require.NoError(t, err)
+
+		result := <-results
+		require.NotEmpty(t, result)
+
+		fromAccount := result.FromAccount
+		require.NotEmpty(t, fromAccount)
+		require.Equal(t, account1.ID, fromAccount.ID)
+
+		toAccount := result.ToAccount
+		require.NotEmpty(t, toAccount)
+		require.Equal(t, account2.ID, toAccount.ID)
+
+		diff1 := account1.Balance - fromAccount.Balance
+		diff2 := toAccount.Balance - account2.Balance
+		require.Equal(t, diff1, diff2)
+		require.True(t, diff1 > 0)
+		require.True(t, diff1%amount == 0)
+
+		k := int(diff1 / amount)
+		require.True(t, k >= 1 && k <= n)
+		require.NotContains(t, mark, k)
+		mark[k] = true
+	}
+
+	updateFromAccount, err := testStore.GetAccount(context.Background(), account1.ID)
+	require.NoError(t, err)
+
+	updateToAccount, err := testStore.GetAccount(context.Background(), account2.ID)
+	require.NoError(t, err)
+
+	require.Equal(t, account1.Balance-int64(n)*amount, updateFromAccount.Balance)
+	require.Equal(t, account2.Balance+int64(n)*amount, updateToAccount.Balance)
 
 }
