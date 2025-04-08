@@ -27,7 +27,7 @@ RETURNING *;
 -- name: GetAccountForUpdate :one
 SELECT * FROM accounts
 WHERE id=$1 LIMIT 1
-FOR  UPDATE;
+FOR NO KEY UPDATE;
 
 -- name: DeleteAccount :exec
 DELETE FROM accounts

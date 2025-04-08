@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -14,10 +15,10 @@ func TestTransTx(t *testing.T) {
 	account2, _ := CreateRandomAccount(t)
 	amount := int64(10)
 	n := 5
+	fmt.Printf("tx: account1 balance %d account2 balance %d\n", account1.Balance, account2.Balance)
 
 	errs := make(chan error)
 	results := make(chan TransferTxResult)
-
 	mark := make(map[int]bool)
 
 	for i := 0; i < n; i++ {
@@ -42,6 +43,28 @@ func TestTransTx(t *testing.T) {
 		result := <-results
 		require.NotEmpty(t, result)
 
+		transfer := result.Transfer
+		require.NotEmpty(t, transfer)
+		require.Equal(t, amount, transfer.Amount)
+		require.Equal(t, account1.ID, transfer.FromAccountID)
+		require.Equal(t, account2.ID, transfer.ToAccountID)
+		require.NotEmpty(t, transfer.CreatedAt)
+		require.NotEmpty(t, transfer.ID)
+
+		fromEntry := result.FromEntry
+		require.NotEmpty(t, fromEntry)
+		require.Equal(t, account1.ID, fromEntry.AccountID)
+		require.Equal(t, -amount, fromEntry.Amount)
+		require.NotEmpty(t, fromEntry.CreatedAt)
+		require.NotEmpty(t, fromEntry.ID)
+
+		toEntry := result.ToEntry
+		require.NotEmpty(t, toEntry)
+		require.Equal(t, account2.ID, toEntry.AccountID)
+		require.Equal(t, amount, toEntry.Amount)
+		require.NotEmpty(t, toEntry.CreatedAt)
+		require.NotEmpty(t, toEntry.ID)
+
 		fromAccount := result.FromAccount
 		require.NotEmpty(t, fromAccount)
 		require.Equal(t, account1.ID, fromAccount.ID)
@@ -50,6 +73,7 @@ func TestTransTx(t *testing.T) {
 		require.NotEmpty(t, toAccount)
 		require.Equal(t, account2.ID, toAccount.ID)
 
+		fmt.Printf("account1 balance %d account2 balance %d\n", fromAccount.Balance, toAccount.Balance)
 		diff1 := account1.Balance - fromAccount.Balance
 		diff2 := toAccount.Balance - account2.Balance
 		require.Equal(t, diff1, diff2)
@@ -60,6 +84,7 @@ func TestTransTx(t *testing.T) {
 		require.True(t, k >= 1 && k <= n)
 		require.NotContains(t, mark, k)
 		mark[k] = true
+
 	}
 
 	updateFromAccount, err := testStore.GetAccount(context.Background(), account1.ID)
