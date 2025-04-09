@@ -49,7 +49,7 @@ func (store *Store) exeTx(ctx context.Context, fn func(q *Queries) error) error 
 	return tx.Commit()
 }
 
-func (store *Store) TransferTx(ctx context.Context, q *Queries, arg TransferTxParams) (TransferTxResult, error) {
+func (store *Store) TransferTx(ctx context.Context, arg TransferTxParams) (TransferTxResult, error) {
 	var result TransferTxResult
 	err := store.exeTx(ctx, func(q *Queries) error {
 		var err error
@@ -90,30 +90,10 @@ func (store *Store) TransferTx(ctx context.Context, q *Queries, arg TransferTxPa
 		// 	return err
 		// }
 
-		account1, err := q.GetAccountForUpdate(ctx, arg.FromAccountID)
-		if err != nil {
-			return err
-		}
-
-		result.FromAccount, err = q.UpdateAccountBalance(ctx, UpdateAccountBalanceParams{
-			ID:      account1.ID,
-			Balance: account1.Balance - arg.Amount,
-		})
-		if err != nil {
-			return err
-		}
-
-		account2, err := q.GetAccountForUpdate(ctx, arg.ToAccountID)
-		if err != nil {
-			return err
-		}
-
-		result.ToAccount, err = q.UpdateAccountBalance(ctx, UpdateAccountBalanceParams{
-			ID:      account2.ID,
-			Balance: account2.Balance + arg.Amount,
-		})
-		if err != nil {
-			return err
+		if arg.FromAccountID < arg.ToAccountID {
+			result.FromAccount, result.ToAccount, err = addMoney(ctx, q, arg.FromAccountID, -arg.Amount, arg.ToAccountID, arg.Amount)
+		} else {
+			result.ToAccount, result.FromAccount, err = addMoney(ctx, q, arg.ToAccountID, arg.Amount, arg.FromAccountID, -arg.Amount)
 		}
 
 		return err
@@ -123,4 +103,25 @@ func (store *Store) TransferTx(ctx context.Context, q *Queries, arg TransferTxPa
 		return result, err
 	}
 	return result, err
+}
+
+func addMoney(ctx context.Context, q *Queries,
+	account1ID int64, amount1 int64,
+	account2ID int64, amount2 int64) (updateAccount1 Account, updateAccount2 Account, err error) {
+	updateAccount1, err = q.AddAccountBalance(ctx, AddAccountBalanceParams{
+		Amount:    amount1,
+		AccountID: account1ID,
+	})
+	if err != nil {
+		return
+	}
+	updateAccount2, err = q.AddAccountBalance(ctx, AddAccountBalanceParams{
+		Amount:    amount2,
+		AccountID: account2ID,
+	})
+	if err != nil {
+		return
+	}
+
+	return
 }

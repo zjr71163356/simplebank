@@ -134,3 +134,13 @@ func TestUpdateAccountBalance(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, arg.Balance, account.Balance)
 }
+func TestAddAccountBalance(t *testing.T) {
+	account, _ := CreateRandomAccount(t)
+	arg := AddAccountBalanceParams{
+		AccountID: account.ID,
+		Amount:    utils.RandomInt63(0, 5000),
+	}
+	updateAccount, err := testQueries.AddAccountBalance(context.Background(), arg)
+	require.NoError(t, err)
+	require.Equal(t, account.Balance+arg.Amount, updateAccount.Balance)
+}
