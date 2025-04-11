@@ -15,8 +15,20 @@ func NewServer(store *db.Store) *Server {
 	router := gin.Default()
 
 	router.POST("/CreateAccount", server.createAccount)
+	router.GET("/GetAccount/:id", server.getAccount)
+	router.GET("/GetAccountList", server.getAccountList)
+
 	server.router = router
+
 	return server
+}
+
+func (server *Server) Start(address string) error {
+	err := server.router.Run(address)
+	if err != nil {
+		return err
+	}
+	return err
 }
 
 func errorResponse(err error) gin.H {
