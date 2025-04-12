@@ -12,6 +12,7 @@ import (
 const (
 	dbDriver = "postgres"
 	dbSource = "postgresql://root:azsx0123456@localhost:5432/simple_bank?sslmode=disable"
+	address  = "0.0.0.0:1234"
 )
 
 func main() {
@@ -23,5 +24,5 @@ func main() {
 	}
 	store := db.NewStore(testDB)
 	server := api.NewServer(store)
-	server.Start("0.0.0.0:1234")
+	server.Start(address)
 }

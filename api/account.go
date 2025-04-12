@@ -13,7 +13,7 @@ type CreateAccountParams struct {
 }
 
 type GetAccountParams struct {
-	id int64 `uri:"id" binding:"required,min=1"`
+	Id int64 `uri:"id" binding:"required,min=1"`
 }
 
 type GetAccountListParams struct {
@@ -45,7 +45,8 @@ func (server *Server) getAccount(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	account, err := server.store.GetAccount(ctx, reqData.id)
+
+	account, err := server.store.GetAccount(ctx, reqData.Id)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
