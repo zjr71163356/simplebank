@@ -65,6 +65,7 @@ func (server *Server) getAccountList(ctx *gin.Context) {
 	accountList, err := server.store.ListAccounts(ctx, db.ListAccountsParams{
 		Limit:  reqData.PageSize,
 		Offset: (reqData.PageId - 1) * reqData.PageSize,
+		Owner:  "ofudn",
 	})
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
