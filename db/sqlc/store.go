@@ -6,7 +6,12 @@ import (
 	"fmt"
 )
 
-type Store struct {
+type Store interface {
+	Querier
+	TransferTx(ctx context.Context, arg TransferTxParams) (TransferTxResult, error)
+}
+
+type SQLStore struct {
 	*Queries
 	db *sql.DB
 }
@@ -25,14 +30,14 @@ type TransferTxParams struct {
 	Amount        int64 `json:"amount"`
 }
 
-func NewStore(db *sql.DB) *Store {
-	return &Store{
+func NewStore(db *sql.DB) Store {
+	return &SQLStore{
 		Queries: New(db),
 		db:      db,
 	}
 }
 
-func (store *Store) exeTx(ctx context.Context, fn func(q *Queries) error) error {
+func (store *SQLStore) exeTx(ctx context.Context, fn func(q *Queries) error) error {
 	tx, err := store.db.BeginTx(ctx, nil) //创建一个数据库事务变量，得到指针
 	if err != nil {
 		return err
@@ -49,7 +54,7 @@ func (store *Store) exeTx(ctx context.Context, fn func(q *Queries) error) error 
 	return tx.Commit()
 }
 
-func (store *Store) TransferTx(ctx context.Context, arg TransferTxParams) (TransferTxResult, error) {
+func (store *SQLStore) TransferTx(ctx context.Context, arg TransferTxParams) (TransferTxResult, error) {
 	var result TransferTxResult
 	err := store.exeTx(ctx, func(q *Queries) error {
 		var err error

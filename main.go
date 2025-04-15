@@ -10,11 +10,7 @@ import (
 	"github.com/zjr71163356/simplebank/utils"
 )
 
-// const (
-// 	dbDriver = "postgres"
-// 	dbSource = "postgresql://root:azsx0123456@localhost:5432/simple_bank?sslmode=disable"
-// 	address  = "0.0.0.0:1234"
-// )
+
 
 func main() {
 	var err error
