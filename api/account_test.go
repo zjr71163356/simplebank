@@ -100,26 +100,7 @@ func TestAccountAPI2(t *testing.T) {
 
 }
 
-func TestAccountAPI(t *testing.T) {
-	account := randomAccount()
 
-	ctrl := gomock.NewController(t)
-
-	store := mockdb.NewMockStore(ctrl)
-	store.EXPECT().GetAccount(gomock.Any(), gomock.Eq(account.ID)).Times(1).Return(account, nil)
-
-	server := NewServer(store)
-
-	recorder := httptest.NewRecorder()
-
-	url := fmt.Sprintf("/GetAccount/%d", account.ID)
-	request, err := http.NewRequest(http.MethodGet, url, nil)
-	require.NoError(t, nil, err)
-
-	server.router.ServeHTTP(recorder, request)
-	require.Equal(t, http.StatusOK, recorder.Code)
-
-}
 
 func randomAccount() db.Account {
 	return db.Account{
