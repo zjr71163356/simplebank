@@ -9,10 +9,10 @@ import (
 )
 
 func CreateRandomTransfer(t *testing.T) (Transfer, error) {
-	fromAccount, err := CreateRandomAccount(t)
+	fromAccount, err := createRandomAccount(t)
 	require.NoError(t, err)
 
-	toAccount, err := CreateRandomAccount(t)
+	toAccount, err := createRandomAccount(t)
 	require.NoError(t, err)
 
 	arg := CreateTransferParams{
@@ -76,8 +76,8 @@ func TestGetTransfer(t *testing.T) {
 
 func TestListTransfers(t *testing.T) {
 	var transferList []Transfer
-	fromAccount, _ := CreateRandomAccount(t)
-	toAccount, _ := CreateRandomAccount(t)
+	fromAccount, _ := createRandomAccount(t)
+	toAccount, _ := createRandomAccount(t)
 	for i := 0; i < 10; i++ {
 		transfer, _ := CreateTransferWithFixedID(t, fromAccount.ID, toAccount.ID)
 		transferList = append(transferList, transfer)

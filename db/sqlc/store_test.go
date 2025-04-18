@@ -11,8 +11,8 @@ import (
 func TestTransTx(t *testing.T) {
 	testStore := NewStore(testDB)
 
-	account1, _ := CreateRandomAccount(t)
-	account2, _ := CreateRandomAccount(t)
+	account1, _ := createRandomAccount(t)
+	account2, _ := createRandomAccount(t)
 	amount := int64(10)
 	n := 5
 	fmt.Printf("tx: account1 balance %d account2 balance %d\n", account1.Balance, account2.Balance)
@@ -100,8 +100,8 @@ func TestTransTx(t *testing.T) {
 func TestTransTxDeadLock(t *testing.T) {
 	testStore := NewStore(testDB)
 
-	account1, _ := CreateRandomAccount(t)
-	account2, _ := CreateRandomAccount(t)
+	account1, _ := createRandomAccount(t)
+	account2, _ := createRandomAccount(t)
 	amount := int64(10)
 	n := 10
 	fmt.Printf("tx: account1 balance %d account2 balance %d\n", account1.Balance, account2.Balance)

@@ -10,7 +10,7 @@ import (
 )
 
 func CreateRandomEntry(t *testing.T) (Entry, error) {
-	account, _ := CreateRandomAccount(t)
+	account, _ := createRandomAccount(t)
 
 	arg := CreateEntryParams{
 		AccountID: account.ID,
@@ -71,7 +71,7 @@ func TestEntry(t *testing.T) {
 
 func TestListEntries(t *testing.T) {
 	var entrylist []Entry
-	account, _ := CreateRandomAccount(t)
+	account, _ := createRandomAccount(t)
 
 	for i := 0; i < 10; i++ {
 		entry, _ := CreateRandomEntryWithFixedAccount(t, account)
