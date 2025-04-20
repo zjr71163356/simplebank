@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/lib/pq"
@@ -14,6 +15,14 @@ type CreateUserParams struct {
 	Password string `json:"hashed_password" binding:"required,min=6"`
 	FullName string `json:"full_name" binding:"required"`
 	Email    string `json:"email" binding:"required,email"`
+}
+
+type CreateResultUserParams struct {
+	Username          string    `json:"username"`
+	FullName          string    `json:"full_name"`
+	Email             string    `json:"email"`
+	PasswordChangedAt time.Time `json:"password_changed_at"`
+	CreatedAt         time.Time `json:"created_at"`
 }
 
 func (server *Server) createUser(ctx *gin.Context) {
@@ -36,6 +45,13 @@ func (server *Server) createUser(ctx *gin.Context) {
 		Email:          reqData.Email,
 	})
 
+	returnedUser := CreateResultUserParams{
+		Username:          user.Username,
+		FullName:          user.FullName,
+		Email:             user.Email,
+		PasswordChangedAt: user.PasswordChangedAt,
+		CreatedAt:         user.CreatedAt,
+	}
 	if err != nil {
 		//foreign_key_violation
 		if pqErr, ok := err.(*pq.Error); ok {
@@ -48,6 +64,6 @@ func (server *Server) createUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-	ctx.JSON(http.StatusOK, user)
+	ctx.JSON(http.StatusOK, returnedUser)
 
 }
