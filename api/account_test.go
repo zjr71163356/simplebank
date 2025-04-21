@@ -17,7 +17,7 @@ import (
 	"github.com/zjr71163356/simplebank/utils"
 )
 
-func TestAccountAPI2(t *testing.T) {
+func TestAccountAPI(t *testing.T) {
 	account := randomAccount()
 	testCases := []struct {
 		name          string
