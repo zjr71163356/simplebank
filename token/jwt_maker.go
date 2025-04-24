@@ -43,6 +43,8 @@ func (maker *JWTMaker) CreateToken(username string, duration time.Duration) (str
 }
 
 func (jwtmaker *JWTMaker) VerifyToken(token string) (*Payload, error) {
+	//该方法对数字签名的算法类型进行检查
+	//避免修改方法头的安全攻击操作
 	jwtKeyFunc := func(token *jwt.Token) (interface{}, error) {
 		_, ok := token.Method.(*jwt.SigningMethodHMAC)
 		if !ok {
@@ -54,7 +56,7 @@ func (jwtmaker *JWTMaker) VerifyToken(token string) (*Payload, error) {
 	jwtToken, err := jwt.ParseWithClaims(token, &Payload{}, jwtKeyFunc)
 
 	if err != nil {
-		if errors.Is(jwt.ErrTokenExpired, err) {
+		if errors.Is(err, jwt.ErrTokenExpired) {
 			return nil, jwt.ErrTokenExpired
 		}
 		return nil, ErrInvalidToken
