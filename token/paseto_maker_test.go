@@ -9,9 +9,9 @@ import (
 	"github.com/zjr71163356/simplebank/utils"
 )
 
-func TestJWTMaker(t *testing.T) {
+func TestPasetoMaker(t *testing.T) {
 	secretKey := utils.RandomString(32)
-	maker, err := NewJWTMaker(secretKey)
+	maker, err := NewPasetoMaker(secretKey)
 	require.NoError(t, err)
 
 	username := utils.RandomOwnerName()
@@ -35,9 +35,9 @@ func TestJWTMaker(t *testing.T) {
 
 }
 
-func TestExpiredJWTToken(t *testing.T) {
+func TestExpiredPasetoToken(t *testing.T) {
 	secretKey := utils.RandomString(32)
-	maker, err := NewJWTMaker(secretKey)
+	maker, err := NewPasetoMaker(secretKey)
 	require.NoError(t, err)
 
 	username := utils.RandomOwnerName()
@@ -52,25 +52,4 @@ func TestExpiredJWTToken(t *testing.T) {
 	require.EqualError(t, err, jwt.ErrTokenExpired.Error())
 	require.Nil(t, payload)
 
-}
-
-func TestInvalidJWTTokenAlgNone(t *testing.T) {
-	secretKey := utils.RandomString(32)
-	username := utils.RandomOwnerName()
-	duration := time.Minute
-
-	payload, err := NewPayload(username, duration)
-	require.NoError(t, err)
-
-	jwtToken := jwt.NewWithClaims(jwt.SigningMethodNone, payload)
-	token, err := jwtToken.SignedString(jwt.UnsafeAllowNoneSignatureType)
-	require.NoError(t, err)
-	require.NotEmpty(t, token)
-
-	maker, err := NewJWTMaker(secretKey)
-	require.NoError(t, err)
-	payload, err = maker.VerifyToken(token)
-	require.Error(t, err)
-	require.EqualError(t, err, ErrInvalidToken.Error())
-	require.Nil(t, payload)
 }
