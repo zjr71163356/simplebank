@@ -10,18 +10,21 @@ import (
 	"github.com/zjr71163356/simplebank/utils"
 )
 
-
-
 func main() {
 	var err error
-	config, _ := utils.LoadConfig(".")
-
+	config, err := utils.LoadConfig(".")
+	if err != nil {
+		log.Fatal("can not load config file:", err)
+	}
 	testDB, err := sql.Open(config.DBDriver, config.DBSource)
 	// fmt.Print(connManage)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("can not connect to db:", err)
 	}
 	store := db.NewStore(testDB)
-	server := api.NewServer(store)
+	server, err := api.NewServer(config, store)
+	if err != nil {
+		log.Fatal("can not create server:", err)
+	}
 	server.Start(config.Address)
 }

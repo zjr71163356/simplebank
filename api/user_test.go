@@ -114,11 +114,11 @@ func TestGetUserAPI(t *testing.T) {
 				store := mockdb.NewMockStore(ctrl)
 				tc.buildStub(store)
 
-				server := NewServer(store)
-
+				server, err := newTestServer(t, store)
+				require.NoError(t, err)
 				recorder := httptest.NewRecorder()
 
-				url := "/CreateUser"
+				url := "/User/Create"
 				body, err := json.Marshal(tc.body)
 				require.NoError(t, err)
 

@@ -82,8 +82,8 @@ func TestAccountAPI(t *testing.T) {
 				store := mockdb.NewMockStore(ctrl)
 				tc.buildStub(store)
 
-				server := NewServer(store)
-
+				server, err := newTestServer(t, store)
+				require.NoError(t, err)
 				recorder := httptest.NewRecorder()
 
 				url := fmt.Sprintf("/GetAccount/%d", tc.accountID)
@@ -99,8 +99,6 @@ func TestAccountAPI(t *testing.T) {
 	}
 
 }
-
-
 
 func randomAccount() db.Account {
 	return db.Account{
