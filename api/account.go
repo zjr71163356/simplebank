@@ -67,16 +67,16 @@ func (server *Server) getAccount(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("invalid token payload")))
 	}
 	account, err := server.store.GetAccount(ctx, reqData.Id)
-	if account.Owner != payload.Username {
-		ctx.JSON(http.StatusForbidden, errorResponse(errors.New("account doesn't belong to the user")))
-		return
-	}
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, errorResponse(err))
 			return
 		}
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	if account.Owner != payload.Username {
+		ctx.JSON(http.StatusForbidden, errorResponse(errors.New("account doesn't belong to the user")))
 		return
 	}
 	ctx.JSON(http.StatusOK, account)
