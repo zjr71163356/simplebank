@@ -12,7 +12,7 @@ import (
 )
 
 type CreateAccountParams struct {
-	Currency string `json:"currency" binding:"required,oneof=USD EUR "`
+	Currency string `json:"currency" binding:"required,oneof=USD EUR CAD JPY GBP"`
 }
 
 type GetAccountParams struct {
@@ -62,10 +62,8 @@ func (server *Server) getAccount(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	payload, ok := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
-	if !ok {
-		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("invalid token payload")))
-	}
+	payload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+
 	account, err := server.store.GetAccount(ctx, reqData.Id)
 	if err != nil {
 		if err == sql.ErrNoRows {
