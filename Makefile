@@ -1,5 +1,15 @@
-postgres_run:
+image_build:
+	docker build -t simple_bank .
+image_ctn_run:
+	docker run -p 1234:1234 -e APP_ENV=dev simple_bank
+ctn_start:
+	docker start simple_bank
+
+postgres_ctn_start:
+	docker start postgres16
+postgres_ctn_run:
 	docker run --name postgres16 -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=azsx0123456 -d postgres:16-alpine
+
 createdb:
 	docker exec -it postgres16 createdb --username=root --owner=root simple_bank
 dropdb:
