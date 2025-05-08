@@ -10,6 +10,11 @@ FROM alpine:3.21
 WORKDIR /app
 COPY --from=builder /app/main .
 COPY app.env .
+COPY wait-for.sh .
+COPY start.sh .
+COPY db/migration .
+RUN chmod +x wait-for.sh
+RUN chmod +x start.sh
 
 EXPOSE 1234
 CMD [ "/app/main" ]

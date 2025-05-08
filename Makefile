@@ -1,7 +1,8 @@
+DB_URL=postgresql://root:azsx0123456@localhost:5432/simple_bank?sslmode=disable
 image:
 	docker build -t simplebank:latest .
 run:
-	 docker run --network bank-network --name simplebank -p 1234:1234 -e GIN_MODE=release  -e DB_SOURCE="postgresql://root:azsx0123456@postgres16:5432/simple_bank?sslmode=disable"  simplebank:latest
+	 docker run --network bank-network --name simplebank -p 1234:1234 -e GIN_MODE=release  -e DB_SOURCE=${DB_URL}  simplebank:latest
 start:
 	docker start simplebank
 stop:	
@@ -21,9 +22,9 @@ createdb:
 dropdb:
 	docker exec -it postgres16 dropdb simple_bank
 migrateup:
-	migrate -path db/migration -database "postgresql://root:azsx0123456@localhost:5432/simple_bank?sslmode=disable" -verbose up
+	migrate -path db/migration -database ${DB_URL} -verbose up
 migratedown:
-	migrate -path db/migration -database "postgresql://root:azsx0123456@localhost:5432/simple_bank?sslmode=disable" -verbose down
+	migrate -path db/migration -database ${DB_URL} -verbose down
 sqlc:
 	sqlc generate
 test:
