@@ -32,14 +32,17 @@ func NewJWTMaker(secretKey string) (*JWTMaker, error) {
 // token的创建，使用NewWithClaims需要指定使用的签名算法、再输入payload，这样就能创建Token
 // 使用创建的Token类型的变量的SignedString，以密钥作为参数，SignedString返回创建完整的token
 // 其中duration指的是创建和过期之间间隔的时间
-func (maker *JWTMaker) CreateToken(username string, duration time.Duration) (string, error) {
+func (maker *JWTMaker) CreateToken(username string, duration time.Duration) (string, *Payload, error) {
 	payload, err := NewPayload(username, duration)
 	if err != nil {
-		return "", err
+		return "", nil, err
 	}
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
-	return jwtToken.SignedString([]byte(maker.secretKey))
-
+	token, err := jwtToken.SignedString([]byte(maker.secretKey))
+	if err != nil {
+		return "", nil, err
+	}
+	return token, payload, nil
 }
 
 func (jwtmaker *JWTMaker) VerifyToken(token string) (*Payload, error) {
