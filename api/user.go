@@ -73,7 +73,7 @@ func (server *Server) LoginUser(ctx *gin.Context) {
 		return
 	}
 
-	token, payload, err := server.tokenMaker.CreateToken(user.Username, server.config.AccessTokenDuration)
+	accessToken, payload, err := server.tokenMaker.CreateToken(user.Username, server.config.AccessTokenDuration)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
@@ -84,18 +84,19 @@ func (server *Server) LoginUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
+
 	server.store.CreateSession(ctx, db.CreateSessionParams{
 		ID:           refreshPayload.Id,
 		Username:     refreshPayload.Username,
 		RefreshToken: refreshToken,
-		UserAgent:    "",
-		ClientIp:     "",
+		UserAgent:    ctx.Request.UserAgent(),
+		ClientIp:     ctx.ClientIP(),
 		IsBlocked:    false,
 		ExpiresAt:    refreshPayload.ExpiredAt,
 	})
 
 	rsp := loginUserResponse{
-		AccessToken:           token,
+		AccessToken:           accessToken,
 		AccessTokenExpiresAt:  payload.ExpiredAt,
 		RefreshToken:          refreshToken,
 		RefreshTokenExpiresAt: refreshPayload.ExpiredAt,
