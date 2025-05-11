@@ -45,7 +45,7 @@ func (server *Server) setupRouter() {
 	router.POST("/RenewToken", server.RenewToken)
 	router.POST("/CreateTransfer", server.createTransfer)
 	router.POST("/User/Create", server.createUser)
-	router.POST("/User/Login", server.LoginUser)
+	router.POST("/User/Login", server.loginUser)
 	server.router = router
 }
 

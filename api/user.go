@@ -50,7 +50,7 @@ func newUserResponse(user db.User) userResponse {
 	}
 }
 
-func (server *Server) LoginUser(ctx *gin.Context) {
+func (server *Server) loginUser(ctx *gin.Context) {
 	reqData := loginUserRequest{}
 	if err := ctx.ShouldBindJSON(&reqData); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
