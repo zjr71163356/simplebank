@@ -33,4 +33,9 @@ server:
 	go run main.go
 mock:
 	mockgen --package mockdb -destination db/mock/store.go  github.com/zjr71163356/simplebank/db/sqlc Store
+composeup:
+	docker compose up
+composedown:
+	docker compose down	
+
 .PHONY: createdb dropdb migrateup  migratedown  postgres_run server mock image start stop remove inspect
