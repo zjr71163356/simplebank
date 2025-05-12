@@ -37,5 +37,7 @@ composeup:
 	docker compose up
 composedown:
 	docker compose down	
-
+proto :
+	rm -f pb/*.go
+	protoc --proto_path=proto --go_out=pb --go_opt=paths=source_relative     --go-grpc_out=pb  --go-grpc_opt=paths=source_relative     proto/*.proto
 .PHONY: createdb dropdb migrateup  migratedown  postgres_run server mock image start stop remove inspect
