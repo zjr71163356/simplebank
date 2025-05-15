@@ -3,7 +3,7 @@ package pb;
 import "user.proto";
 option go_package = "github.com/zjr71163356/simplebank/pb";
 
-message CreateUserParams  {
+message CreateUserRequest  {
     string username=1;
     string password=2;
     string full_name=3;

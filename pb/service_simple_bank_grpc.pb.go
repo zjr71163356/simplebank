@@ -27,7 +27,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type SimpleBankClient interface {
-	CreateUser(ctx context.Context, in *CreateUserParams, opts ...grpc.CallOption) (*CreateUserResponse, error)
+	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
 	LoginUser(ctx context.Context, in *LoginUserRequest, opts ...grpc.CallOption) (*LoginUserResponse, error)
 }
 
@@ -39,7 +39,7 @@ func NewSimpleBankClient(cc grpc.ClientConnInterface) SimpleBankClient {
 	return &simpleBankClient{cc}
 }
 
-func (c *simpleBankClient) CreateUser(ctx context.Context, in *CreateUserParams, opts ...grpc.CallOption) (*CreateUserResponse, error) {
+func (c *simpleBankClient) CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CreateUserResponse)
 	err := c.cc.Invoke(ctx, SimpleBank_CreateUser_FullMethodName, in, out, cOpts...)
@@ -63,7 +63,7 @@ func (c *simpleBankClient) LoginUser(ctx context.Context, in *LoginUserRequest, 
 // All implementations must embed UnimplementedSimpleBankServer
 // for forward compatibility.
 type SimpleBankServer interface {
-	CreateUser(context.Context, *CreateUserParams) (*CreateUserResponse, error)
+	CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
 	LoginUser(context.Context, *LoginUserRequest) (*LoginUserResponse, error)
 	mustEmbedUnimplementedSimpleBankServer()
 }
@@ -75,7 +75,7 @@ type SimpleBankServer interface {
 // pointer dereference when methods are called.
 type UnimplementedSimpleBankServer struct{}
 
-func (UnimplementedSimpleBankServer) CreateUser(context.Context, *CreateUserParams) (*CreateUserResponse, error) {
+func (UnimplementedSimpleBankServer) CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
 }
 func (UnimplementedSimpleBankServer) LoginUser(context.Context, *LoginUserRequest) (*LoginUserResponse, error) {
@@ -103,7 +103,7 @@ func RegisterSimpleBankServer(s grpc.ServiceRegistrar, srv SimpleBankServer) {
 }
 
 func _SimpleBank_CreateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateUserParams)
+	in := new(CreateUserRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -115,7 +115,7 @@ func _SimpleBank_CreateUser_Handler(srv interface{}, ctx context.Context, dec fu
 		FullMethod: SimpleBank_CreateUser_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SimpleBankServer).CreateUser(ctx, req.(*CreateUserParams))
+		return srv.(SimpleBankServer).CreateUser(ctx, req.(*CreateUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

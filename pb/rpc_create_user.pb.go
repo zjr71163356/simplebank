@@ -21,7 +21,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type CreateUserParams struct {
+type CreateUserRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Username      string                 `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
 	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
@@ -31,20 +31,20 @@ type CreateUserParams struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *CreateUserParams) Reset() {
-	*x = CreateUserParams{}
+func (x *CreateUserRequest) Reset() {
+	*x = CreateUserRequest{}
 	mi := &file_rpc_create_user_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *CreateUserParams) String() string {
+func (x *CreateUserRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CreateUserParams) ProtoMessage() {}
+func (*CreateUserRequest) ProtoMessage() {}
 
-func (x *CreateUserParams) ProtoReflect() protoreflect.Message {
+func (x *CreateUserRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_rpc_create_user_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -56,33 +56,33 @@ func (x *CreateUserParams) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CreateUserParams.ProtoReflect.Descriptor instead.
-func (*CreateUserParams) Descriptor() ([]byte, []int) {
+// Deprecated: Use CreateUserRequest.ProtoReflect.Descriptor instead.
+func (*CreateUserRequest) Descriptor() ([]byte, []int) {
 	return file_rpc_create_user_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *CreateUserParams) GetUsername() string {
+func (x *CreateUserRequest) GetUsername() string {
 	if x != nil {
 		return x.Username
 	}
 	return ""
 }
 
-func (x *CreateUserParams) GetPassword() string {
+func (x *CreateUserRequest) GetPassword() string {
 	if x != nil {
 		return x.Password
 	}
 	return ""
 }
 
-func (x *CreateUserParams) GetFullName() string {
+func (x *CreateUserRequest) GetFullName() string {
 	if x != nil {
 		return x.FullName
 	}
 	return ""
 }
 
-func (x *CreateUserParams) GetEmail() string {
+func (x *CreateUserRequest) GetEmail() string {
 	if x != nil {
 		return x.Email
 	}
@@ -138,8 +138,8 @@ var File_rpc_create_user_proto protoreflect.FileDescriptor
 const file_rpc_create_user_proto_rawDesc = "" +
 	"\n" +
 	"\x15rpc_create_user.proto\x12\x02pb\x1a\n" +
-	"user.proto\"}\n" +
-	"\x10CreateUserParams\x12\x1a\n" +
+	"user.proto\"~\n" +
+	"\x11CreateUserRequest\x12\x1a\n" +
 	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
 	"\bpassword\x18\x02 \x01(\tR\bpassword\x12\x1b\n" +
 	"\tfull_name\x18\x03 \x01(\tR\bfullName\x12\x14\n" +
@@ -161,7 +161,7 @@ func file_rpc_create_user_proto_rawDescGZIP() []byte {
 
 var file_rpc_create_user_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_rpc_create_user_proto_goTypes = []any{
-	(*CreateUserParams)(nil),   // 0: pb.CreateUserParams
+	(*CreateUserRequest)(nil),  // 0: pb.CreateUserRequest
 	(*CreateUserResponse)(nil), // 1: pb.CreateUserResponse
 	(*User)(nil),               // 2: pb.User
 }
