@@ -61,7 +61,7 @@ func (server *Server) LoginUser(ctx context.Context, req *pb.LoginUserRequest) (
 		return nil, status.Errorf(codes.Internal, "failed to get user: %s", err)
 	}
 
-	err = utils.MatchPassWord(req.GetPassword(), user.HashedPassword)
+	err = utils.MatchPassWord(user.HashedPassword, req.GetPassword())
 	if err != nil {
 		return nil, status.Errorf(codes.Unauthenticated, "incorrect password")
 	}
