@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"runtime"
 
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	_ "github.com/lib/pq"
 	"github.com/zjr71163356/simplebank/api"
 	db "github.com/zjr71163356/simplebank/db/sqlc"
@@ -60,5 +62,13 @@ func runGRPCServer(config utils.Config, store db.Store) {
 	if err != nil {
 		log.Fatal("can not start grpc server:", err)
 	}
+
+}
+func runGRPCGatewayServer(config utils.Config, store db.Store) {
+	server, err := gapi.NewServer(config, store)
+	if err != nil {
+		log.Fatal("can not create server:", err)
+	}
+	mux := runtime.NewServeMux()
 
 }
