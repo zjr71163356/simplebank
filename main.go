@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"log"
 	"net"
 	"net/http"
@@ -50,7 +49,7 @@ func runGRPCServer(config utils.Config, store db.Store) {
 	if err != nil {
 		log.Fatal("can not create server:", err)
 	}
-	fmt.Println(config.GRPCServerAddress)
+
 	grpcServer := grpc.NewServer()
 	pb.RegisterSimpleBankServer(grpcServer, server)
 	reflection.Register(grpcServer)
@@ -92,7 +91,7 @@ func runGRPCGatewayServer(config utils.Config, store db.Store) {
 	mux.Handle("/", grpcMux)
 
 	listener, err := net.Listen("tcp", config.HTTPServerAddress)
-
+	log.Printf("start grpc server at %s", listener.Addr().String())
 	err = http.Serve(listener, mux)
 	if err != nil {
 		log.Fatal("can not start http server:", err)
