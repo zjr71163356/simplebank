@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "SimpleBank",
+    "title": "rpc_create_user.proto",
     "version": "version not set"
   },
   "tags": [

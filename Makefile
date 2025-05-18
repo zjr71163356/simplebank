@@ -44,6 +44,7 @@ proto :
 	   --go-grpc_out=pb  --go-grpc_opt=paths=source_relative \
 	    --grpc-gateway_out=pb --grpc-gateway_opt=paths=source_relative \
 		--openapiv2_out=doc/swagger --openapiv2_opt=allow_merge=true proto/*.proto
+	statik -src=./doc/swagger -dest=./doc
 evans:
 	evans --host localhost --port 9090 -r repl
 .PHONY: createdb dropdb migrateup  migratedown  postgres_run server mock image start stop remove inspect proto

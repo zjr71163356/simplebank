@@ -6,9 +6,10 @@ import (
 	"log"
 	"net"
 	"net/http"
-
+	_ "github.com/zjr71163356/simplebank/doc/statik"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	_ "github.com/lib/pq"
+	"github.com/rakyll/statik/fs"
 	"github.com/zjr71163356/simplebank/api"
 	db "github.com/zjr71163356/simplebank/db/sqlc"
 	"github.com/zjr71163356/simplebank/gapi"
@@ -89,9 +90,16 @@ func runGRPCGatewayServer(config utils.Config, store db.Store) {
 	}
 	mux := http.NewServeMux()
 	mux.Handle("/", grpcMux)
+	statikFS, err := fs.New()
+	if err != nil {
+		log.Fatal("can not create statik fs:", err)
+	}
+
+	hfs := http.StripPrefix("/swagger/", http.FileServer(statikFS))
+	mux.Handle("/swagger/", hfs)
 
 	listener, err := net.Listen("tcp", config.HTTPServerAddress)
-	log.Printf("start grpc server at %s", listener.Addr().String())
+	log.Printf("start gataway server at %s", listener.Addr().String())
 	err = http.Serve(listener, mux)
 	if err != nil {
 		log.Fatal("can not start http server:", err)
