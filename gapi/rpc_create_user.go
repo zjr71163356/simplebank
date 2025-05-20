@@ -9,12 +9,17 @@ import (
 	db "github.com/zjr71163356/simplebank/db/sqlc"
 	"github.com/zjr71163356/simplebank/pb"
 	"github.com/zjr71163356/simplebank/utils"
+	"github.com/zjr71163356/simplebank/val"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func (server *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
+	if err := ValidateCreateUserRequest(req); err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid request: %v", err)
+	}
+
 	HashedPassword, err := utils.HashPassWord(req.Password)
 	if err != nil {
 
@@ -53,6 +58,9 @@ func (server *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest)
 }
 
 func (server *Server) LoginUser(ctx context.Context, req *pb.LoginUserRequest) (*pb.LoginUserResponse, error) {
+	if err := ValidateLoginUserRequest(req); err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid request: %v", err)
+	}
 	user, err := server.store.GetUser(ctx, req.GetUsername())
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -105,4 +113,31 @@ func (server *Server) LoginUser(ctx context.Context, req *pb.LoginUserRequest) (
 	}
 
 	return rsp, nil
+}
+
+func ValidateCreateUserRequest(req *pb.CreateUserRequest) error {
+	if err := val.ValidateUsername(req.Username); err != nil {
+		return status.Errorf(codes.InvalidArgument, "invalid username: %s", err)
+	}
+	if err := val.ValidatePassword(req.Password); err != nil {
+		return status.Errorf(codes.InvalidArgument, "invalid password: %s", err)
+	}
+	if err := val.ValidateFullName(req.FullName); err != nil {
+		return status.Errorf(codes.InvalidArgument, "invalid full name: %s", err)
+	}
+	if err := val.ValidateEmail(req.Email); err != nil {
+		return status.Errorf(codes.InvalidArgument, "invalid email: %s", err)
+	}
+	return nil
+}
+
+func ValidateLoginUserRequest(req *pb.LoginUserRequest) error {
+
+	if err := val.ValidateUsername(req.Username); err != nil {
+		return status.Errorf(codes.InvalidArgument, "invalid username: %s", err)
+	}
+	if err := val.ValidatePassword(req.Password); err != nil {
+		return status.Errorf(codes.InvalidArgument, "invalid password: %s", err)
+	}
+	return nil
 }
