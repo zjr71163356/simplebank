@@ -10,14 +10,15 @@ import (
 	"github.com/zjr71163356/simplebank/pb"
 	"github.com/zjr71163356/simplebank/utils"
 	"github.com/zjr71163356/simplebank/val"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func (server *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
-	if err := ValidateCreateUserRequest(req); err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid request: %v", err)
+	if violations := ValidateCreateUserRequest(req); violations != nil {
+		return nil, invalidArgumentError(violations)
 	}
 
 	HashedPassword, err := utils.HashPassWord(req.Password)
@@ -58,8 +59,8 @@ func (server *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest)
 }
 
 func (server *Server) LoginUser(ctx context.Context, req *pb.LoginUserRequest) (*pb.LoginUserResponse, error) {
-	if err := ValidateLoginUserRequest(req); err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid request: %v", err)
+	if violations := ValidateLoginUserRequest(req); violations != nil {
+		return nil, invalidArgumentError(violations)
 	}
 	user, err := server.store.GetUser(ctx, req.GetUsername())
 	if err != nil {
@@ -115,29 +116,31 @@ func (server *Server) LoginUser(ctx context.Context, req *pb.LoginUserRequest) (
 	return rsp, nil
 }
 
-func ValidateCreateUserRequest(req *pb.CreateUserRequest) error {
-	if err := val.ValidateUsername(req.Username); err != nil {
-		return status.Errorf(codes.InvalidArgument, "invalid username: %s", err)
+func ValidateCreateUserRequest(req *pb.CreateUserRequest) (violations []*errdetails.BadRequest_FieldViolation) {
+	if err := val.ValidateUsername(req.GetUsername()); err != nil {
+		violations = append(violations, fieldViolation("username", err))
 	}
-	if err := val.ValidatePassword(req.Password); err != nil {
-		return status.Errorf(codes.InvalidArgument, "invalid password: %s", err)
+
+	if err := val.ValidatePassword(req.GetPassword()); err != nil {
+		violations = append(violations, fieldViolation("password", err))
 	}
-	if err := val.ValidateFullName(req.FullName); err != nil {
-		return status.Errorf(codes.InvalidArgument, "invalid full name: %s", err)
+	if err := val.ValidateFullName(req.GetFullName()); err != nil {
+		violations = append(violations, fieldViolation("full_name", err))
 	}
-	if err := val.ValidateEmail(req.Email); err != nil {
-		return status.Errorf(codes.InvalidArgument, "invalid email: %s", err)
+	if err := val.ValidateEmail(req.GetEmail()); err != nil {
+		violations = append(violations, fieldViolation("email", err))
 	}
-	return nil
+	return violations
 }
 
-func ValidateLoginUserRequest(req *pb.LoginUserRequest) error {
+func ValidateLoginUserRequest(req *pb.LoginUserRequest) (violations []*errdetails.BadRequest_FieldViolation) {
 
-	if err := val.ValidateUsername(req.Username); err != nil {
-		return status.Errorf(codes.InvalidArgument, "invalid username: %s", err)
+	if err := val.ValidateUsername(req.GetUsername()); err != nil {
+		violations = append(violations, fieldViolation("username", err))
 	}
-	if err := val.ValidatePassword(req.Password); err != nil {
-		return status.Errorf(codes.InvalidArgument, "invalid password: %s", err)
+
+	if err := val.ValidatePassword(req.GetPassword()); err != nil {
+		violations = append(violations, fieldViolation("password", err))
 	}
-	return nil
+	return violations
 }
