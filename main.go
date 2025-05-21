@@ -6,12 +6,16 @@ import (
 	"log"
 	"net"
 	"net/http"
-	_ "github.com/zjr71163356/simplebank/doc/statik"
+
+	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	_ "github.com/lib/pq"
 	"github.com/rakyll/statik/fs"
 	"github.com/zjr71163356/simplebank/api"
 	db "github.com/zjr71163356/simplebank/db/sqlc"
+	_ "github.com/zjr71163356/simplebank/doc/statik"
 	"github.com/zjr71163356/simplebank/gapi"
 	"github.com/zjr71163356/simplebank/pb"
 	"github.com/zjr71163356/simplebank/utils"
@@ -26,14 +30,30 @@ func main() {
 	if err != nil {
 		log.Fatal("can not load config file:", err)
 	}
-	testDB, err := sql.Open(config.DBDriver, config.DBSource)
+	conn, err := sql.Open(config.DBDriver, config.DBSource)
 	// fmt.Print(connManage)
 	if err != nil {
 		log.Fatal("can not connect to db:", err)
 	}
-	store := db.NewStore(testDB)
+
+	runDBMigration(config.MigrateURL, config.DBSource)
+
+	store := db.NewStore(conn)
 	go runGRPCServer(config, store)
 	runGRPCGatewayServer(config, store)
+}
+func runDBMigration(migrateURL string, dbSource string) {
+	migration, err := migrate.New(migrateURL, dbSource)
+
+	if err != nil {
+		log.Fatal("can not create migration:", err)
+	}
+
+	if err := migration.Up(); err != nil && err != migrate.ErrNoChange {
+		log.Fatal("can not run migration:", err)
+	}
+
+	log.Println("db migration completed")
 }
 
 func runGinServer(config utils.Config, store db.Store) {

@@ -12,7 +12,7 @@ COPY --from=builder /app/main .
 COPY app.env .
 COPY wait-for.sh .
 COPY start.sh .
-COPY db/migration .
+COPY db/migration ./db/migration
 RUN chmod +x wait-for.sh
 RUN chmod +x start.sh
 
