@@ -22,6 +22,14 @@ func RandomInt63(min, max int64) int64 {
 	return min + rand.Int63n(max-min+1)
 }
 
+func RandomPassword() string {
+	return RandomString(10)
+}
+
+func RandomHashPassWord() (string, error) {
+	return HashPassWord(RandomPassword())
+}
+
 func RandomOwnerName() string {
 	return RandomString(5)
 }
