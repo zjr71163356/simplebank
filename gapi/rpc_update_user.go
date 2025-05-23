@@ -20,6 +20,15 @@ func (server *Server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest)
 		return nil, invalidArgumentError(violations)
 	}
 
+	payload, err := server.authorizeUser(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Unauthenticated, "failed to authorize user: %v", err)
+	}
+
+	if payload.Username != req.GetUsername() {
+		return nil, status.Errorf(codes.PermissionDenied, "user does not have permission to update user ")
+	}
+
 	arg := db.UpdateUserParams{
 		Username: req.GetUsername(),
 		FullName: sql.NullString{
