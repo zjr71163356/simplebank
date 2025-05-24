@@ -3,9 +3,12 @@ package main
 import (
 	"context"
 	"database/sql"
-	"github.com/rs/zerolog/log"
 	"net"
 	"net/http"
+	"os"
+
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
@@ -30,6 +33,11 @@ func main() {
 	if err != nil {
 		log.Fatal().Err(err).Msg("can not load config file")
 	}
+
+	if config.Environment == "development" {
+		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+	}
+
 	conn, err := sql.Open(config.DBDriver, config.DBSource)
 	// fmt.Print(connManage)
 	if err != nil {
@@ -121,7 +129,9 @@ func runGRPCGatewayServer(config utils.Config, store db.Store) {
 
 	listener, err := net.Listen("tcp", config.HTTPServerAddress)
 	log.Info().Msgf("start gataway server at %s", listener.Addr().String())
-	err = http.Serve(listener, mux)
+	handler := gapi.HttpLogger(mux)
+	
+	err = http.Serve(listener, handler)
 	if err != nil {
 		log.Fatal().Err(err).Msg("can not start http server")
 	}
